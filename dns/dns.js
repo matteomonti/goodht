@@ -1,4 +1,5 @@
 const dns = require('dns');
+const ipint = require('ip-to-int');
 
 module.exports = function(root)
 {
@@ -9,19 +10,21 @@ module.exports = function(root)
   // Members
 
   root = root || 'goo.rain.vg';
-  var domains = {root: root, count: 'count.' + root};
+  var domains = {root: root, window: 'window.' + root};
 
   // Methods
 
-  self.count = function()
+  self.window = function()
   {
     return new Promise(function(resolve, reject)
     {
-      dns.lookup(domains.count, function(error, address, family)
+      dns.lookup(domains.window, function(error, address, family)
       {
         console.log('Error:', error);
         console.log('Address:', address);
         console.log('Family:', family);
+
+        console.log('window:', ipint(address).toInt());
       });
     });
   };

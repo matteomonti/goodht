@@ -1,17 +1,30 @@
 const dns = require('native-dns');
+const ipint = require('ip-to-int');
 
-module.exports = function(root)
+module.exports = function(root, settings)
 {
   // Self
 
   var self = this;
 
+  // Settings
+
+  settings = settings || {};
+  settings.ttl = settings.ttl || 60; // Increase this to several minutes.
+
+  settings.announce = settings.announce || {};
+  settings.announce.min = settings.announce.min || 4;
+  settings.announce.max = settings.announce.max || 16;
+
+  settings.trials = settings.trials || 8;
+  settings.interval = settings.interval || 15000;
+
   // Members
 
-  var domains = {count: 'count.' + root};
+  var domains = {window: 'window.' + root};
 
   var server = dns.createServer();
-  var count = 0;
+  var window = 0;
 
   // Methods
 
@@ -20,13 +33,15 @@ module.exports = function(root)
     server.on('request', function(request, response)
     {
       for(var i = 0; i < request.question.length; i++)
-        if(request.question[i].name == domains.count)
+        if(request.question[i].name == domains.window)
         {
           response.answer.push(dns.A({
-            name: domains.count,
-            address: inttoip(count),
-            ttl: 60
+            name: domains.window,
+            address: ipint(window).toIP(),
+            ttl: settings.ttl
           }));
+
+          break;
         }
 
       response.send();
@@ -38,12 +53,5 @@ module.exports = function(root)
     });
 
     server.serve(port);
-  };
-
-  // Private methods
-
-  var inttoip = function(value)
-  {
-    return [(value >> 24) & 0xff, (value >> 16) & 0xff, (value >> 8) & 0xff, value & 0xff].join('.');
   };
 };
