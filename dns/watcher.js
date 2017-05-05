@@ -37,7 +37,7 @@ module.exports = function(root, settings)
         {
           response.answer.push(dns.A({
             name: domains.window,
-            address: ipint(window).toIP(),
+            address: ipint(window.toString()).toIP(),
             ttl: settings.ttl
           }));
 
