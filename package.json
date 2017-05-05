@@ -1,0 +1,29 @@
+{
+  "name": "goo",
+  "version": "0.0.1",
+  "description": "Peer to peer using BitTorrent DHT and distributed signaling",
+  "main": "main.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matteomonti/goo.git"
+  },
+  "keywords": [
+    "goo",
+    "p2p",
+    "dht",
+    "bittorrent",
+    "signaling"
+  ],
+  "author": "Matteo Monti, Marco Moschettini",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/matteomonti/goo/issues"
+  },
+  "homepage": "https://github.com/matteomonti/goo#readme",
+  "dependencies": {
+    "bittorrent-dht": "^7.4.1",
+    "ip": "^1.1.5",
+    "sqlite3": "^3.1.8"
+  }
+}
