@@ -1,5 +1,7 @@
+const bdht = require('bittorrent-dht');
 const dns = require('native-dns');
 const ipint = require('ip-to-int');
+const crypto = require('crypto');
 
 module.exports = function(root, settings)
 {
@@ -18,11 +20,13 @@ module.exports = function(root, settings)
 
   settings.trials = settings.trials || 8;
   settings.interval = settings.interval || 15000;
+  settings.patience = settings.patience || 5000;
 
   // Members
 
   var domains = {window: 'window.' + root};
 
+  var dht = new bdht();
   var server = dns.createServer();
   var window = 0;
 
@@ -30,6 +34,11 @@ module.exports = function(root, settings)
 
   self.serve = function(port)
   {
+    dht.listen(20000, function()
+    {
+      console.log('Connected to dht.');
+    });
+
     server.on('request', function(request, response)
     {
       for(var i = 0; i < request.question.length; i++)
@@ -53,5 +62,109 @@ module.exports = function(root, settings)
     });
 
     server.serve(port);
+    watch();
+  };
+
+  // Private methods
+
+  var query = function(slot)
+  {
+    return new Promise(function(resolve, reject)
+    {
+      var url = `goo://${domains.window}/${slot.toString()}`;
+      var infohash = crypto.createHash('sha1').update(url).digest('hex');
+
+      var peers = {};
+
+      var finalize = function()
+      {
+        dht.removeAllListeners('peer');
+
+        var response = [];
+
+        for(var host in peers)
+          response.push(peers[host]);
+
+        resolve(response);
+      };
+
+      var ftimeout;
+
+      var reset = function()
+      {
+        if(ftimeout)
+          clearTimeout(ftimeout);
+
+        ftimeout = setTimeout(finalize, settings.patience);
+      };
+
+      dht.on('peer', function (peer, reshash, from)
+      {
+        if(reshash.toString('hex') == infohash)
+        {
+          reset();
+          var host = `${peer.host}:${peer.port.toString()}`;
+
+          if(!(host in peers))
+            peers[host] = peer;
+        }
+      });
+
+      reset();
+      dht.lookup(infohash);
+    });
+  };
+
+  var watch = async function()
+  {
+    var history = [];
+
+    while(true)
+    {
+      var slot = Math.floor(Math.random() * (2 ** window));
+
+      console.log('Querying slot', slot, 'with window', window);
+      var peers = await query(slot);
+      console.log(peers.length, 'peers found');
+
+      history.push(peers.length);
+      if(history.length > settings.trials)
+        history.shift();
+
+      if(history.length == settings.trials)
+      {
+        var up = true;
+        var down = true;
+
+        for(var i = 0; i < history.length; i++)
+        {
+          if(history[i] <= settings.announce.max)
+            up = false;
+
+          if(history[i] >= settings.announce.min)
+            down = false;
+        }
+
+        if(up)
+        {
+          window++;
+          history = [];
+        }
+
+        if(down && window > 0)
+        {
+          window--;
+          history = [];
+        }
+      }
+
+      await (function()
+      {
+        return new Promise(function(resolve)
+        {
+          setTimeout(resolve, settings.interval);
+        });
+      })();
+    }
   };
 };
