@@ -1,4 +1,7 @@
-const watcher = require('./dns/watcher.js');
+const dns = require('./dns/dns.js');
 
-var my_watcher = new watcher('goo.rain.vg');
-my_watcher.serve(53);
+(async function()
+{
+  my_dns = new dns();
+  console.log(await my_dns.window());
+})();

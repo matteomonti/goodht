@@ -20,11 +20,10 @@ module.exports = function(root)
     {
       dns.lookup(domains.window, function(error, address, family)
       {
-        console.log('Error:', error);
-        console.log('Address:', address);
-        console.log('Family:', family);
+        if(error)
+          return reject(error);
 
-        console.log('window:', ipint(address).toInt());
+        resolve(ipint(address).toInt());
       });
     });
   };
