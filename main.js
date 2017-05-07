@@ -1,7 +1,4 @@
-const dns = require('./dns/dns.js');
+const upnp = require('./nat/upnp.js');
 
-(async function()
-{
-  my_dns = new dns();
-  console.log(await my_dns.window());
-})();
+var my_upnp = new upnp('tcp', 1234);
+my_upnp.serve();

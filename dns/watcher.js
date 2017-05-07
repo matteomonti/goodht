@@ -2,6 +2,7 @@ const bdht = require('bittorrent-dht');
 const dns = require('native-dns');
 const ipint = require('ip-to-int');
 const crypto = require('crypto');
+const sleep = require('../utils/sleep.js');
 
 module.exports = function(root, settings)
 {
@@ -158,13 +159,7 @@ module.exports = function(root, settings)
         }
       }
 
-      await (function()
-      {
-        return new Promise(function(resolve)
-        {
-          setTimeout(resolve, settings.interval);
-        });
-      })();
+      await sleep(settings.interval);
     }
   };
 };
