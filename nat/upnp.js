@@ -47,7 +47,7 @@ module.exports = function(protocol, port, identifier)
         if(online != true)
         {
           online = true;
-          // Fire event: online
+          self.emit('online');
         }
         while(true)
         {
@@ -60,10 +60,11 @@ module.exports = function(protocol, port, identifier)
         if(online != false)
         {
           online = false;
-          // Fire event: offline
+          self.emit('offline');
         }
-        
+
         console.log('Something failed. Sleeping for', interval);
+
         await sleep(interval);
         if(2 * interval < 600000)
           interval *= 2;
