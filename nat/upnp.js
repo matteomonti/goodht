@@ -33,6 +33,7 @@ module.exports = function(protocol, port, identifier)
   self.serve = async function()
   {
     var interval = 1000;
+    var online = undefined;
 
     while(true)
     {
@@ -43,6 +44,11 @@ module.exports = function(protocol, port, identifier)
 
         interval = 1000;
 
+        if(online != true)
+        {
+          online = true;
+          // Fire event: online
+        }
         while(true)
         {
           await sleep(settings.ttl * 30000);
@@ -51,6 +57,12 @@ module.exports = function(protocol, port, identifier)
       }
       catch(error)
       {
+        if(online != false)
+        {
+          online = false;
+          // Fire event: offline
+        }
+        
         console.log('Something failed. Sleeping for', interval);
         await sleep(interval);
         if(2 * interval < 600000)
