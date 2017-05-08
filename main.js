@@ -1,6 +1,6 @@
-const public = require('./nat/public.js');
+const peer = require('./peer/peer.js');
 
 (async function()
 {
-  console.log(await public());
+  var my_peer = new peer();
 })();
