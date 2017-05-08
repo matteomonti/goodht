@@ -30,6 +30,8 @@ module.exports = function(protocol, port, identifier)
     return public;
   };
 
+  // Methods
+
   self.serve = async function()
   {
     var interval = 1000;
@@ -62,8 +64,6 @@ module.exports = function(protocol, port, identifier)
           online = false;
           self.emit('offline');
         }
-
-        console.log('Something failed. Sleeping for', interval);
 
         await sleep(interval);
         if(2 * interval < 600000)

@@ -1,4 +1,6 @@
-const upnp = require('./nat/upnp.js');
+const public = require('./nat/public.js');
 
-var my_upnp = new upnp('tcp', 1234);
-my_upnp.serve();
+(async function()
+{
+  console.log(await public());
+})();
