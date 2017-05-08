@@ -10,6 +10,8 @@ module.exports = function(address)
     if(address)
       options.localAddress = address;
 
+    address = ip.address();
+    
     request.get('http://api.ipify.org', options, function(error, response, body)
     {
       if(error)
