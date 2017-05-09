@@ -72,9 +72,10 @@ module.exports = function(root, settings)
   {
     return new Promise(function(resolve, reject)
     {
-      var url = `goo://${domains.root}/slot/${slot.toString()}`;
-      var infohash = crypto.createHash('sha1').update(url).digest('hex');
-
+      var uri = `goo://${domains.root}/slot/${slot.toString()}`;
+      var infohash = crypto.createHash('sha1').update(uri).digest('hex');
+      console.log('Querying', infohash);
+      
       var peers = {};
 
       var finalize = function()

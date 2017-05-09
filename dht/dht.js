@@ -40,6 +40,8 @@ module.exports = function(options)
       var slot = Math.floor(Math.random() * (2 ** window));
       var uri = `goo://${options.root}/slot/${slot}`;
       var infohash = crypto.createHash('sha1').update(uri).digest('hex');
+      console.log('Announcing on', infohash);
+      
       dht.announce(infohash, port, function(error)
       {
         if(error)
