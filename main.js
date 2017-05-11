@@ -1,12 +1,6 @@
-const sleeper = require('./utils/sleeper.js');
-
-var my_sleeper = new sleeper();
+const peer = require('./peer/peer.js');
 
 (async function()
 {
-  console.log('Start');
-  await my_sleeper.sleep(5000);
-  console.log('End');
+  var my_peer = new peer();
 })();
-
-setTimeout(my_sleeper.wake, 1000);

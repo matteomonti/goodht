@@ -4,6 +4,7 @@ const ddht = require('../dht/dht.js');
 const npublic = require('../nat/public.js');
 const nupnp = require('../nat/upnp.js');
 const sleep = require('../utils/sleep.js');
+const usleeper = require('../utils/sleeper.js');
 
 module.exports = function(options)
 {
@@ -40,6 +41,7 @@ module.exports = function(options)
     setup();
   });
 
+  var sleeper = new usleeper();
   var upnp;
   var dht;
 
@@ -78,6 +80,9 @@ module.exports = function(options)
     if(options.root)
       dhtoptions.root = options.root;
 
+    dhtoptions.public = options.public;
+    dhtoptions.private = options.private;
+
     dht = new ddht();
 
     if(await npublic(options.address == '0.0.0.0' ? undefined : options.address))
@@ -99,6 +104,8 @@ module.exports = function(options)
 
     if(start)
       serve();
+    else
+      sleeper.wake();
   };
 
   var closed = function()
@@ -108,6 +115,8 @@ module.exports = function(options)
 
     if(start)
       serve();
+    else
+      sleeper.wake();
   };
 
   var serve = async function()
@@ -124,7 +133,7 @@ module.exports = function(options)
         console.log('Fuck my life');
       }
 
-      await sleep(300000); // Improve here, should be wakable by open and closed
+      await sleeper.sleep(300000);
     }
   };
 };

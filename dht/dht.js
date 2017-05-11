@@ -1,5 +1,6 @@
 const bdht = require('bittorrent-dht');
 const crypto = require('crypto');
+const ed = require('ed25519-supercop');
 const ddns = require('../dns/dns.js');
 
 module.exports = function(options)
@@ -30,6 +31,16 @@ module.exports = function(options)
     return dht.address();
   };
 
+  self.public = function()
+  {
+    return options.public;
+  };
+
+  self.private = function()
+  {
+    return options.private;
+  };
+
   // Methods
 
   self.announce = function(port)
@@ -41,7 +52,7 @@ module.exports = function(options)
       var uri = `goo://${options.root}/slot/${slot}`;
       var infohash = crypto.createHash('sha1').update(uri).digest('hex');
       console.log('Announcing on', infohash);
-      
+
       dht.announce(infohash, port, function(error)
       {
         if(error)
@@ -50,5 +61,20 @@ module.exports = function(options)
         return resolve();
       });
     });
+  };
+
+  self.put = {
+    open: function(address, port)
+    {
+      return new Promise(function(resolve, reject)
+      {
+        var value = Buffer.from(JSON.stringify({type: 'open', address: address, port: port}));
+        
+      });
+    },
+    closed: function()
+    {
+
+    }
   };
 };
